@@ -1,71 +1,71 @@
 package demo;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Scanner;
 
 public class hw2 {
-    public static boolean isValidGroup(int[] lineOfBoard){
-        boolean[] haveSeen = new boolean[10];
-        for(int num : lineOfBoard){
-            if(haveSeen[num]) return false;
-            haveSeen[num] = true;
-        }
-        return true;
-    }
-
-    public static boolean checkSudoku(int[][] board){
-        for(int i=0; i<9; i++){
-            if(isValidGroup(board[i]) == false){
-                return false;
-            }
-        }
-
-        for(int i=0; i<9; i++){
-            int[] tempGroup = new int[9];
-            for(int j=0; j<9; j++){
-                tempGroup[j] = board[j][i];
-            }
-            if(isValidGroup(tempGroup) == false){
-                return false;
-            }
-        }
-
-        for(int i=0; i<3; i++){
-            for(int j=0; j<3; j++){
-                int[] tempGroup = new int[9];
-                int index = 0;
-                for(int k=i*3; k<i*3+3; k++){
-                    for(int l=j*3; l<j*3+3;l++){
-                        tempGroup[index++] = board[k][l];
-                    }
-                }
-                if(isValidGroup(tempGroup) == false){
-                    return false;
-                }
-            }
-        }
-        return true;
-    }
     public static void main(String[] argv) {
+
         Scanner s = new Scanner(System.in);
         int caseNum = 1;
+        
         while(s.hasNextLine()){
-            int[][] board = new int[9][9];
-            for(int i=0; i<9; i++){
-                String line = s.nextLine();
-                for(int j=0; j<9; j++){
-                    board[i][j] = line.charAt(j) - '0';
-                }
-            }
+            int target = Integer.parseInt(s.nextLine());
+            int[] startPosArr = Arrays.stream(s.nextLine().split(" ")).mapToInt(Integer::parseInt).toArray();  
+            int[] speedArr = Arrays.stream(s.nextLine().split(" ")).mapToInt(Integer::parseInt).toArray();  
             if(s.hasNextLine()) s.nextLine();
             
-            String result = "True";
-            if(!checkSudoku(board)){
-                result = "False";
+            ArrayList<Car> cars = new ArrayList<>();
+            for(int i=0; i<startPosArr.length; i++){
+                cars.add(new Car(startPosArr[i], speedArr[i]));
             }
-            System.out.printf("Case %d: %s.\n", caseNum, result);
+            Collections.sort(cars, (o1, o2) -> o1.pos - o2.pos);
+            
+            int result = 0;
+            while(cars.size() > 0){
+                for(int i=0; i<cars.size(); i++){
+                    Car curCar = cars.get(i);
+                    curCar.pos += curCar.speed;
+                }
 
-            caseNum++;
+                ArrayList<Car> temp = new ArrayList<>();
+                for(int i=0; i<cars.size()-1; i++){
+                    Car curCar = cars.get(i);
+                    Car nextCar = cars.get(i+1);
+                    if(curCar.pos < nextCar.pos){
+                        temp.add(curCar);
+                    }
+                }
+                temp.add(cars.get(cars.size()-1));
+                cars = temp;
+                temp = new ArrayList<>();
+
+                for(int i=0; i<cars.size(); i++){
+                    Car curCar = cars.get(i);
+                    if(curCar.pos < target){
+                        temp.add(curCar);
+                    }
+                    else{
+                        result++;
+                    }
+                }
+
+                cars = temp;
+            }
+            System.out.printf("Case %d: %s.\n", caseNum++, result);
         }
-        
+
         s.close();
+    }
+}
+
+class Car{
+    public int pos;
+    public int speed;
+
+    public Car(int pos, int speed){
+        this.pos = pos;
+        this.speed = speed;
     }
 }
