@@ -45,8 +45,10 @@ public class hw1 {
         return true;
     }
     public static void main(String[] argv) {
+
         Scanner s = new Scanner(System.in);
         int caseNum = 1;
+        
         while(s.hasNextLine()){
             int[][] board = new int[9][9];
             for(int i=0; i<9; i++){
@@ -61,11 +63,9 @@ public class hw1 {
             if(!checkSudoku(board)){
                 result = "False";
             }
-            System.out.printf("Case %d: %s.\n", caseNum, result);
-
-            caseNum++;
+            System.out.printf("Case %d: %s.\n", caseNum++, result);
         }
-        
+
         s.close();
     }
 }
